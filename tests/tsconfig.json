@@ -1,0 +1,22 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": { "types": ["node"], "noEmit": true },
+  "include": [
+    "./**/*.ts",
+    "../src/components/states/error-kind.ts",
+    "../src/features/admin/dashboard-result.ts",
+    "../src/features/admin/inventory-management.ts",
+    "../src/features/admin/inventory-result.ts",
+    "../src/features/admin/orders-result.ts",
+    "../src/features/admin/product-management.ts",
+    "../src/features/admin/products-result.ts",
+    "../src/features/catalog/browse.ts",
+    "../src/features/delivery/checkout.ts",
+    "../src/features/delivery/slot-validation.ts",
+    "../src/features/delivery/validation.ts",
+    "../src/features/orders/create-order-args.ts",
+    "../src/features/orders/delivery-display.ts",
+    "../src/features/orders/place-order-error.ts",
+    "../src/lib/supabase/types.ts"
+  ]
+}

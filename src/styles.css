@@ -1,0 +1,238 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+/*
+ * Design system — "Market hall glass".
+ *
+ * Every colour, radius, font and shadow used by the app is declared here as a
+ * semantic token. Components must never hardcode colour utilities.
+ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--primary);
+
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-card: 14px;
+  --radius-panel: 18px;
+}
+
+:root {
+  --background: hsl(202 42% 95%);
+  --foreground: hsl(210 26% 13%);
+  --surface: hsl(0 0% 100% / 0.6);
+  --surface-strong: hsl(0 0% 100% / 0.78);
+  --muted: hsl(
+    210 20% 13% / 0.72
+  ); /* was 0.55 (3.6:1, below WCAG AA); now ~6:1 on background and cards */
+  --primary: hsl(164 46% 32%);
+  --primary-foreground: hsl(160 34% 97%);
+  --accent: hsl(28 90% 55%);
+  --accent-foreground: hsl(210 26% 13%);
+  --danger: hsl(354 68% 44%); /* was 50% L (4.4:1 as text); now >= 5:1 */
+  --danger-foreground: hsl(0 0% 100%);
+  --border: hsl(210 30% 20% / 0.1);
+  --shadow-panel: 0 18px 40px -28px hsl(210 30% 20% / 0.45);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -160% 0;
+  }
+  100% {
+    background-position: 260% 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@utility skeleton {
+  background: linear-gradient(
+    100deg,
+    hsl(205 32% 90%) 30%,
+    hsl(205 36% 95%) 50%,
+    hsl(205 32% 90%) 70%
+  );
+  background-size: 220% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+@utility rise {
+  animation: rise 0.55s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@utility slide-panel {
+  animation: slide-in 0.5s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@utility glass-panel {
+  background-color: var(--surface);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-panel);
+  outline: 1px solid var(--border);
+  outline-offset: -1px;
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Phase 11: accessibility + motion ------------------------------------------------------------- */
+
+@layer base {
+  /* One visible focus ring everywhere, including links and form controls that set no ring. */
+  :where(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [tabindex]
+  ):focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  /* Headings and the main area are focused by script after a page change, never by Tab, so they
+     take no ring. Everything reachable with Tab keeps the ring above. */
+  :where(h1, h2, main)[tabindex="-1"]:focus-visible {
+    outline: none;
+  }
+
+  /* Smooth scrolling only for people who have not asked for less motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /* Never allow sideways page scroll; wide content scrolls inside its own container. */
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Skeletons stay as flat blocks instead of shimmering. */
+  .skeleton {
+    animation: none !important;
+    background: hsl(205 32% 92%);
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@utility skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  border-radius: 9999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  &:focus {
+    transform: translateY(0);
+  }
+}
+
+/* Horizontal chip rails: touch scrolling without a visible scrollbar. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Phase 15: 44px touch targets in the admin area only. Scoped by a body class that exists only
+   while the admin shell is mounted, so storefront screens are unaffected. Switches and checkboxes
+   keep their own size; inline text links keep their line height (only table-cell links grow). */
+@media (max-width: 1023px), (pointer: coarse) {
+  .admin-active
+    :is(
+      button,
+      [role="tab"],
+      select,
+      input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"])
+    ):not([role="switch"]):not([role="checkbox"]) {
+    min-height: 2.75rem;
+  }
+  .admin-active td a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+}
